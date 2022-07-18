@@ -140,8 +140,11 @@
 #define INVERSE 2
 
 HAL_StatusTypeDef OLED_1306_SendCmd(uint8_t cmd);
-HAL_StatusTypeDef OLED_1306_ClearFrame();
+HAL_StatusTypeDef OLED_1306_FillScreen(uint8_t color);
 HAL_StatusTypeDef OLED_1306_Init(I2C_HandleTypeDef* hi2c, uint16_t addr, uint16_t w, uint8_t h, uint8_t inv);
 HAL_StatusTypeDef OLED_1306_Deinit();
 HAL_StatusTypeDef OLED_1306_Display();
 HAL_StatusTypeDef OLED_1306_DrawPixel(int16_t x, int16_t y, uint16_t color);
+HAL_StatusTypeDef OLED_1306_DrawHorLine(uint8_t sx, uint8_t sy, uint8_t ex, uint8_t color);
+HAL_StatusTypeDef OLED_1306_DrawVerLine(uint8_t sx, uint8_t sy, uint8_t ex, uint8_t color);
+HAL_StatusTypeDef OLED_1306_DrawRectangle(uint8_t sx, uint8_t sy, uint8_t ex, uint8_t ey, uint8_t color);

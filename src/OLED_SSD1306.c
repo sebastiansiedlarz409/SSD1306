@@ -14,10 +14,42 @@ uint8_t* frame = NULL;
 uint8_t oled_address = 0;
 I2C_HandleTypeDef* oled_hi2c;
 
-HAL_StatusTypeDef OLED_1306_ClearFrame(){
+HAL_StatusTypeDef OLED_1306_DrawRectangle(uint8_t sx, uint8_t sy, uint8_t ex, uint8_t ey, uint8_t color){
+	HAL_StatusTypeDef status = HAL_OK;
+
+	status |= OLED_1306_DrawHorLine(sx, sy, ex, color); //top
+	status |= OLED_1306_DrawHorLine(sx, ey, ex, color); //bottom
+
+	status |= OLED_1306_DrawVerLine(sx, sy, ey, color); //left
+	status |= OLED_1306_DrawVerLine(ex, sy, ey+1, color); //right
+
+	return status;
+}
+
+HAL_StatusTypeDef OLED_1306_DrawHorLine(uint8_t sx, uint8_t sy, uint8_t ex, uint8_t color){
+	HAL_StatusTypeDef status = HAL_OK;
+
+	for(uint32_t i = sx;i<ex;i++){
+		status |= OLED_1306_DrawPixel(i, sy, color);
+	}
+
+	return status;
+}
+
+HAL_StatusTypeDef OLED_1306_DrawVerLine(uint8_t sx, uint8_t sy, uint8_t ey, uint8_t color){
+	HAL_StatusTypeDef status = HAL_OK;
+
+	for(uint32_t i = sy;i<ey;i++){
+		status |= OLED_1306_DrawPixel(sx, i, color);
+	}
+
+	return status;
+}
+
+HAL_StatusTypeDef OLED_1306_FillScreen(uint8_t color){
 	if(frame == NULL) return HAL_ERROR;
 
-	memset(frame, 0, width*((height + 7) / 8));
+	memset(frame, color == BLACK ? 0 : 255, width*((height + 7) / 8));
 
 	return HAL_OK;
 }
@@ -35,7 +67,7 @@ HAL_StatusTypeDef OLED_1306_Init(I2C_HandleTypeDef* hi2c, uint16_t addr, uint16_
 
 	if (frame == NULL) return HAL_ERROR;
 
-	status |= OLED_1306_ClearFrame();
+	status |= OLED_1306_FillScreen(BLACK);
 
 	/*Init Procedure*/
 	status |= OLED_1306_SendCmd(OLED_SSD1306_DISPLAYOFF);
