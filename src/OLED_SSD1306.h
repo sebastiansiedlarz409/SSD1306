@@ -147,4 +147,6 @@ HAL_StatusTypeDef OLED_1306_Display();
 HAL_StatusTypeDef OLED_1306_DrawPixel(int16_t x, int16_t y, uint16_t color);
 HAL_StatusTypeDef OLED_1306_DrawHorLine(uint8_t sx, uint8_t sy, uint8_t ex, uint8_t color);
 HAL_StatusTypeDef OLED_1306_DrawVerLine(uint8_t sx, uint8_t sy, uint8_t ex, uint8_t color);
-HAL_StatusTypeDef OLED_1306_DrawRectangle(uint8_t sx, uint8_t sy, uint8_t ex, uint8_t ey, uint8_t color);
+HAL_StatusTypeDef OLED_1306_DrawRectangle(uint8_t sx, uint8_t sy, uint8_t ex, uint8_t ey, uint8_t color, uint8_t fill_color);
+HAL_StatusTypeDef OLED_1306_DrawCharacter(uint16_t x, uint16_t y, char chr, uint8_t font_size, uint8_t color);
+HAL_StatusTypeDef OLED_1306_DrawString(int x, int y, const char* str, uint8_t font_size, uint8_t color);
