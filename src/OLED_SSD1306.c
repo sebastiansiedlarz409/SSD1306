@@ -8,12 +8,49 @@
 //INSERT HERE MCU STD LIB HEADER FILE
 #include <stm32l4xx_hal.h>
 
+uint8_t background = BLACK;
+uint8_t invertVer = 0;
+uint8_t invertHor = 0;
+uint8_t init = 0;
 uint8_t invertColors = 0;
 uint16_t width = 0;
 uint16_t height = 0;
 uint8_t* frame = NULL;
 uint8_t oled_address = 0;
 I2C_HandleTypeDef* oled_hi2c;
+
+HAL_StatusTypeDef OLED_1306_InvertHorizontally(){
+	if(invertHor == 0){
+		invertHor = 1;
+		return OLED_1306_SendCmd(OLED_SSD1306_SEGMIRMAP);
+	}
+	else{
+		invertHor = 0;
+		return OLED_1306_SendCmd(OLED_SSD1306_SEGREMAP);
+	}
+}
+
+HAL_StatusTypeDef OLED_1306_InvertVertically(){
+	if(invertVer == 0){
+		invertVer = 1;
+		return OLED_1306_SendCmd(OLED_SSD1306_COMSCANINC);
+	}
+	else{
+		invertVer = 0;
+		return OLED_1306_SendCmd(OLED_SSD1306_COMSCANDEC);
+	}
+}
+
+HAL_StatusTypeDef OLED_1306_InvertColors(){
+	if(background == BLACK){
+		background = WHITE;
+		return OLED_1306_SendCmd(OLED_SSD1306_INVERTDISPLAY);
+	}
+	else{
+		background = BLACK;
+		return OLED_1306_SendCmd(OLED_SSD1306_NORMALDISPLAY);
+	}
+}
 
 HAL_StatusTypeDef OLED_1306_DrawString(int x, int y, const char* str, uint8_t font_size, uint8_t color){
 	HAL_StatusTypeDef status = HAL_OK;
@@ -102,6 +139,8 @@ HAL_StatusTypeDef OLED_1306_FillScreen(uint8_t color){
 }
 
 HAL_StatusTypeDef OLED_1306_Init(I2C_HandleTypeDef* hi2c, uint16_t addr, uint16_t w, uint8_t h, uint8_t inv){
+	if(init == 1) return HAL_ERROR;
+
 	HAL_StatusTypeDef status = HAL_OK;
 
 	inv = invertColors;
@@ -172,6 +211,7 @@ HAL_StatusTypeDef OLED_1306_Init(I2C_HandleTypeDef* hi2c, uint16_t addr, uint16_
 
 	status |= OLED_1306_Display();
 
+	init = 1;
 	if(status == HAL_OK) return status;
 
 	OLED_1306_Deinit();
@@ -184,6 +224,7 @@ HAL_StatusTypeDef OLED_1306_Deinit(){
 
 	free(frame);
 
+	init = 0;
 	return HAL_OK;
 }
 
