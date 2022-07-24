@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 //INSERT HERE MCU STD LIB HEADER FILE
 #include <stm32l4xx_hal.h>
@@ -18,6 +19,24 @@ uint16_t height = 0;
 uint8_t* frame = NULL;
 uint8_t oled_address = 0;
 I2C_HandleTypeDef* oled_hi2c;
+
+HAL_StatusTypeDef OLED_1306_SetScreenOn(uint8_t on){
+	HAL_StatusTypeDef status = HAL_OK;
+	if(on)
+		status |= OLED_1306_SendCmd(OLED_SSD1306_DISPLAYON);
+	else
+		status |= OLED_1306_SendCmd(OLED_SSD1306_DISPLAYOFF);
+	return status;
+}
+
+HAL_StatusTypeDef OLED_1306_SetContrast(uint8_t value){
+	HAL_StatusTypeDef status = HAL_OK;
+
+	status |= OLED_1306_SendCmd(OLED_SSD1306_SETCONTRAST);
+	status |= OLED_1306_SendCmd(value); //contrast
+
+	return status;
+}
 
 HAL_StatusTypeDef OLED_1306_InvertHorizontally(){
 	if(invertHor == 0){
@@ -89,6 +108,45 @@ HAL_StatusTypeDef OLED_1306_DrawCharacter(uint16_t x, uint16_t y, char chr, uint
             }
         }
     }
+
+	return status;
+}
+
+HAL_StatusTypeDef OLED_1306_DrawImage(uint8_t* image, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color){
+	int8_t status = HAL_OK;
+
+	uint16_t byteWidth = (w + 7) / 8;
+    uint8_t byte = 0;
+
+    if (x >= width || y >= height) {
+        return -1;
+    }
+
+    for (uint8_t j = 0; j < h; j++, y++) {
+        for (uint8_t i = 0; i < w; i++) {
+            if (i & 7)
+                byte <<= 1;
+            else
+                byte = (*(const unsigned char *)(&image[j * byteWidth + i / 8]));
+			if (byte & 0x80)
+                OLED_1306_DrawPixel(x + i, y, color);
+        }
+    }
+
+	return status;
+}
+
+HAL_StatusTypeDef OLED_1306_DrawCircle(uint8_t x, uint8_t y, uint8_t r, uint8_t color){
+	int8_t status = HAL_OK;
+
+	for(uint8_t i = 0;i<width;i++){
+		for(uint8_t j = 0;j<height;j++){
+			double distance = sqrt((x-i)*(x-i)+(y-j)*(y-j));
+			if(distance<=r){
+				status |= OLED_1306_DrawPixel(i,j, color);
+			}
+		}
+	}
 
 	return status;
 }
