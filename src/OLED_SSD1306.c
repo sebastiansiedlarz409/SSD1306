@@ -71,7 +71,7 @@ HAL_StatusTypeDef OLED_1306_InvertColors(){
 	}
 }
 
-HAL_StatusTypeDef OLED_1306_DrawString(int x, int y, const char* str, uint8_t font_size, uint8_t color){
+HAL_StatusTypeDef OLED_1306_DrawString(uint8_t x, uint8_t y, const char* str, uint8_t font_size, uint8_t color){
 	HAL_StatusTypeDef status = HAL_OK;
 
 	int x_tmp = x;
@@ -88,7 +88,7 @@ HAL_StatusTypeDef OLED_1306_DrawString(int x, int y, const char* str, uint8_t fo
 	return status;
 }
 
-HAL_StatusTypeDef OLED_1306_DrawCharacter(uint16_t x, uint16_t y, char chr, uint8_t font_size, uint8_t color){
+HAL_StatusTypeDef OLED_1306_DrawCharacter(uint8_t x, uint8_t y, char chr, uint8_t font_size, uint8_t color){
 	if(chr > 0x7E) return HAL_ERROR; // chr > '~'
 
 	HAL_StatusTypeDef status = HAL_OK;
